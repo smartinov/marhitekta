@@ -21,7 +21,7 @@ Static hidden-object game at https://smartinov.github.io/marhitekta/. GitHub Pag
 
 The artwork comes from the private working project `~/Documents/MArhitekta` (the edition is still a work-in-progress candidate there, published here at the owner's request).
 
-- Image: `panorama/work/assembly/populated/candidate.png`, 6280 × 3533. Replace with an approved `panorama/complete/` image once one exists.
+- Image: `panorama/work/assembly/populated/candidate.png`, 6280 × 3533. The published tiles were cut from the version with SHA-256 prefix `dead5e1c83ab`; compare before re-cutting. Replace with an approved `panorama/complete/` image once one exists.
 - Building boxes: `panorama/work/production-layout/layout.json` → `targets[].projectedPixelBounds`. Wright: `panorama/work/assembly/populated/placements.json` → `actor` (`topLeft`, `width`, `height`).
 - Boxes are only valid while the panorama stays 6280 × 3533 with the same layout; re-check them against crops of any new image.
 - Portrait: `references/architect/wright-portrait.jpg`, Al Ravenna 1954, public domain (Library of Congress).
