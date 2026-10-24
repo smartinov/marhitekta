@@ -1,16 +1,19 @@
 # Find the Architect
 
-Static hidden-object game published with GitHub Pages from `main` (repository root). There is no build step, framework or dependency.
+Static hidden-object game at https://smartinov.github.io/marhitekta/. GitHub Pages deploys `main` (repository root) automatically on every push; `.nojekyll` skips Jekyll. There is no build step, framework or dependency. MIT licensed (`LICENSE`); the Wright portrait is public domain.
 
 ## Layout
 
-- `index.html`: landing page; one card per architect linking to `play.html?a=<id>`.
-- `play.html`: the shared game (pan, zoom, pinch, click to find, checklist). It loads `<id>/game.js`; `id` must match `^[a-z-]+$`.
-- `style.css`: styles for both pages.
-- `<id>/game.js`: sets `window.GAME` with the panorama size, the 2 × 2 tile list and the targets. Each target box is `[x, y, width, height]` in full-panorama pixels.
-- `<id>/tile-1..4.avif|webp`: non-overlapping quadrants (top left, top right, bottom left, bottom right); AVIF with WebP fallback.
-- `<id>/preview.webp`: ~1000 px wide placeholder shown while tiles load.
-- `<id>/portrait.webp`: landing card portrait. Credit it in the landing footer.
+- `index.html`: landing page; one card per architect plus the "more coming soon" card.
+- `architects/<name>/index.html`: one static page per architect (clean URL `/architects/<name>/`) with its own title, description, canonical URL and Open Graph/Twitter tags. Loads `game.js` then `../../play.js`.
+- `play.js`: shared game (pan, zoom, pinch, tap to find, keyboard crosshair, checklist bottom sheet on phones).
+- `style.css`: styles for every page; phones (≤760 px) are the primary layout.
+- `architects/<name>/game.js`: sets `window.GAME` with the panorama size, the 2 × 2 tile list and the targets. Each target box is `[x, y, width, height]` in full-panorama pixels.
+- `architects/<name>/tile-1..4.avif|webp`: non-overlapping quadrants (top left, top right, bottom left, bottom right); AVIF with WebP fallback.
+- `architects/<name>/preview.webp`: ~1000 px wide placeholder shown while tiles load.
+- `architects/<name>/portrait.webp`: landing card portrait. Credit it in the landing footer.
+- `architects/<name>/share.jpg`: 1200 × 630 link-preview banner (portrait + scene crop + title), kept under 300 KB for WhatsApp.
+- `sitemap.xml`, `robots.txt`: list every architect page in the sitemap.
 
 ## Frank Lloyd Wright source
 
@@ -28,13 +31,13 @@ magick "$SRC" -crop 3140x1767+0+0 +repage t1.png
 magick "$SRC" -crop 3140x1767+3140+0 +repage t2.png
 magick "$SRC" -crop 3140x1766+0+1767 +repage t3.png
 magick "$SRC" -crop 3140x1766+3140+1767 +repage t4.png
-for i in 1 2 3 4; do cwebp -q 82 -m 6 t$i.png -o wright/tile-$i.webp; avifenc -q 60 -s 6 -j all t$i.png wright/tile-$i.avif; done
-magick "$SRC" -resize 1000x -quality 55 wright/preview.webp
+for i in 1 2 3 4; do cwebp -q 82 -m 6 t$i.png -o architects/frank-lloyd-wright/tile-$i.webp; avifenc -q 60 -s 6 -j all t$i.png architects/frank-lloyd-wright/tile-$i.avif; done
+magick "$SRC" -resize 1000x -quality 55 architects/frank-lloyd-wright/preview.webp
 ```
 
 ## Adding an architect
 
-Create `<id>/` with `game.js`, four tiles, `preview.webp` and `portrait.webp`, then add a card to `index.html` and its portrait credit to the footer. Clear the rights for every published image first.
+Copy `architects/frank-lloyd-wright/` to `architects/<name>/`, replace `game.js`, tiles, `preview.webp`, `portrait.webp`, `share.jpg` and the page metadata, then add a card to `index.html`, its portrait credit to the footer and its URL to `sitemap.xml`. Clear the rights for every published image first.
 
 ## Verification
 

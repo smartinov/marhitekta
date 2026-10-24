@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find Frank Lloyd Wright: Fallingwater, the Guggenheim and more | Find the Architect</title>
+  <meta name="description" content="A free hidden-object game: find Fallingwater, the Guggenheim, Robie House and seven more Frank Lloyd Wright buildings, and Wright himself, in a crowded illustrated town.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <link rel="canonical" href="https://smartinov.github.io/marhitekta/architects/frank-lloyd-wright/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Find the Architect">
+  <meta property="og:title" content="Can you find Frank Lloyd Wright?">
+  <meta property="og:description" content="Spot Fallingwater, the Guggenheim and eight more Wright buildings, then find the architect himself in the crowd.">
+  <meta property="og:url" content="https://smartinov.github.io/marhitekta/architects/frank-lloyd-wright/">
+  <meta property="og:image" content="https://smartinov.github.io/marhitekta/architects/frank-lloyd-wright/share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Portrait of Frank Lloyd Wright beside the illustrated town with his buildings">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body class="game list-open">
+  <header>
+    <a href="../../" aria-label="Back to all architects">←</a>
+    <h1 id="title">Find Frank Lloyd Wright</h1>
+    <button id="count" aria-controls="checklist" aria-expanded="true" aria-live="polite"></button>
+    <button id="out" aria-label="Zoom out">−</button>
+    <button id="fit" aria-label="Show whole picture">Fit</button>
+    <button id="in" aria-label="Zoom in">+</button>
+  </header>
+  <main>
+    <div class="frame">
+      <div class="view" id="view" tabindex="0" aria-label="Picture. Arrow keys pan, Enter guesses at the crosshair."><div class="stage" id="stage"></div></div>
+      <div class="crosshair" aria-hidden="true"></div>
+    </div>
+    <aside id="checklist">
+      <p>Drag to look around, pinch or use + / − to zoom, and tap what you find. Tap the counter to show or hide this list.</p>
+      <ol id="list"></ol>
+    </aside>
+  </main>
+  <div id="toast" role="status"></div>
+  <script src="game.js"></script>
+  <script src="../../play.js"></script>
+</body>
+</html>

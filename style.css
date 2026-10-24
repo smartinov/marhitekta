@@ -28,7 +28,11 @@ a { color: var(--rust); }
 .card div { padding: 12px 16px 16px; }
 .card h2 { margin: 0; font-size: 1.3rem; }
 .card span { color: var(--muted); font-size: .9rem; }
-.soon { color: var(--muted); margin-top: 24px; }
+.card.soon {
+  display: grid; place-items: center; min-height: 200px; padding: 24px; text-align: center;
+  color: var(--muted); background: none; box-shadow: none; border: 2px dashed #0003;
+}
+.card.soon:hover { transform: none; }
 footer { color: var(--muted); font-size: .8rem; margin-top: 48px; }
 
 /* Game */
@@ -41,7 +45,14 @@ footer { color: var(--muted); font-size: .8rem; margin-top: 48px; }
   background: var(--paper); color: var(--ink); cursor: pointer;
 }
 .game main { flex: 1; display: flex; min-height: 0; }
-.view { flex: 1; display: grid; overflow: auto; touch-action: none; cursor: grab; background: #d9cbb2; user-select: none; -webkit-user-select: none; }
+.frame { flex: 1; position: relative; display: grid; min-width: 0; min-height: 0; }
+.crosshair {
+  display: none; position: absolute; left: 50%; top: 50%; width: 32px; height: 32px; margin: -16px 0 0 -16px;
+  border: 2px solid var(--rust); border-radius: 50%; box-shadow: 0 0 0 2px #fff; pointer-events: none;
+}
+.view:focus-visible { outline: 3px solid var(--rust); outline-offset: -3px; }
+.view:focus-visible + .crosshair { display: block; }
+.view { min-width: 0; min-height: 0; display: grid; overflow: auto; touch-action: none; cursor: grab; background: #d9cbb2; user-select: none; -webkit-user-select: none; }
 .view:active { cursor: grabbing; }
 .stage { margin: auto; position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .stage img { display: block; width: 100%; height: auto; -webkit-user-drag: none; }
@@ -65,7 +76,20 @@ aside li small { display: block; color: var(--muted); }
 }
 #toast.show { opacity: 1; }
 
+.game header button { touch-action: manipulation; }
+
+/* Phones: the picture takes the screen and the checklist is a bottom sheet toggled by the counter. */
 @media (max-width: 760px) {
-  .game main { flex-direction: column; }
-  aside { width: auto; max-height: 34vh; }
+  .game header { flex-wrap: nowrap; gap: 8px; padding-top: max(8px, env(safe-area-inset-top)); }
+  .game header h1 { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .game header button { min-width: 44px; height: 44px; }
+  #count::after { content: ' ▾'; }
+  .list-open #count::after { content: ' ▴'; }
+  aside {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 2; width: auto; max-height: 55dvh;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom)); border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 20px #0004; transform: translateY(105%); transition: transform .25s;
+  }
+  .list-open aside { transform: none; }
+  #toast { z-index: 3; }
 }
