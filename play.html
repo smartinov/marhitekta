@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find the Architect</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="game">
+  <header>
+    <a href="./" aria-label="Back to architects">←</a>
+    <h1 id="title">Find the Architect</h1>
+    <span id="count"></span>
+    <button id="out" aria-label="Zoom out">−</button>
+    <button id="fit" aria-label="Show whole picture">Fit</button>
+    <button id="in" aria-label="Zoom in">+</button>
+  </header>
+  <main>
+    <div class="view" id="view"><div class="stage" id="stage"></div></div>
+    <aside>
+      <p>Drag to look around, pinch, ctrl+scroll or use + / − to zoom, and click what you find.</p>
+      <ol id="list"></ol>
+    </aside>
+  </main>
+  <div id="toast" role="status"></div>
+  <script>
+    const id = new URLSearchParams(location.search).get('a') || '';
+    if (!/^[a-z-]+$/.test(id)) location.replace('./');
+    const loader = document.createElement('script');
+    loader.src = `${id}/game.js`;
+    loader.onload = () => start(window.GAME);
+    loader.onerror = () => location.replace('./');
+    document.head.append(loader);
+
+    function start(game) {
+      const [W, H] = game.size;
+      const $ = (sel) => document.getElementById(sel);
+      const view = $('view'), stage = $('stage'), list = $('list');
+      const found = new Set();
+      const started = Date.now();
+      document.title = $('title').textContent = `Find ${game.name}`;
+
+      stage.style.aspectRatio = `${W} / ${H}`;
+      // A small preview shows instantly while the full-resolution tiles stream in on top.
+      stage.style.background = `url(${id}/preview.webp) 0 0 / 100% 100%`;
+      stage.innerHTML = game.tiles.map(([file, w, h]) =>
+        `<picture><source srcset="${id}/${file}.avif" type="image/avif">` +
+        `<img src="${id}/${file}.webp" width="${w}" height="${h}" alt="" draggable="false"></picture>`).join('');
+      stage.firstChild.querySelector('img').alt = `Crowded illustrated landscape hiding buildings by ${game.name}`;
+      list.innerHTML = game.targets.map((t) => `<li><b>${t.name}</b><small>${t.cue}</small></li>`).join('');
+
+      // Scale is displayed pixels per panorama pixel.
+      let scale = 1;
+      const minScale = () => Math.min(view.clientWidth / W, view.clientHeight / H);
+      function zoomAt(next, x, y) {
+        const before = stage.getBoundingClientRect();
+        const px = (x - before.left) / scale, py = (y - before.top) / scale;
+        scale = Math.min(3, Math.max(minScale(), next));
+        stage.style.width = `${W * scale}px`;
+        const after = stage.getBoundingClientRect();
+        view.scrollLeft += after.left + px * scale - x;
+        view.scrollTop += after.top + py * scale - y;
+      }
+      const zoomCenter = (factor) => {
+        const r = view.getBoundingClientRect();
+        zoomAt(scale * factor, r.left + r.width / 2, r.top + r.height / 2);
+      };
+      const fit = () => zoomCenter(0);
+      fit();
+      // Open filling the viewport so phones do not start on a letterboxed thumbnail.
+      zoomCenter(Math.max(view.clientWidth / W, view.clientHeight / H) / scale);
+      addEventListener('resize', () => scale < minScale() && fit());
+      $('in').onclick = () => zoomCenter(1.5);
+      $('out').onclick = () => zoomCenter(1 / 1.5);
+      $('fit').onclick = fit;
+      addEventListener('keydown', (e) => {
+        if (e.key === '+' || e.key === '=') zoomCenter(1.5);
+        if (e.key === '-') zoomCenter(1 / 1.5);
+      });
+      view.addEventListener('wheel', (e) => {
+        if (!e.ctrlKey) return;
+        e.preventDefault();
+        zoomAt(scale * Math.exp(-e.deltaY * 0.01), e.clientX, e.clientY);
+      }, { passive: false });
+
+      // One pointer pans, two pointers pinch; a press that barely moves is a guess.
+      const pointers = new Map();
+      let travel = 0, pinch = 0;
+      view.onpointerdown = (e) => {
+        view.setPointerCapture(e.pointerId);
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        travel = pointers.size > 1 ? Infinity : 0;
+        pinch = 0;
+      };
+      view.onpointermove = (e) => {
+        const p = pointers.get(e.pointerId);
+        if (!p) return;
+        if (pointers.size === 1) {
+          view.scrollLeft -= e.clientX - p.x;
+          view.scrollTop -= e.clientY - p.y;
+          travel += Math.abs(e.clientX - p.x) + Math.abs(e.clientY - p.y);
+        }
+        p.x = e.clientX;
+        p.y = e.clientY;
+        if (pointers.size === 2) {
+          const [a, b] = [...pointers.values()];
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (pinch) zoomAt(scale * d / pinch, (a.x + b.x) / 2, (a.y + b.y) / 2);
+          pinch = d;
+        }
+      };
+      view.onpointerup = (e) => {
+        if (pointers.size === 1 && travel < 8) guess(e.clientX, e.clientY);
+        pointers.delete(e.pointerId);
+        pinch = 0;
+      };
+      view.onpointercancel = (e) => { pointers.delete(e.pointerId); pinch = 0; };
+
+      const pct = (v, total) => `${(v / total) * 100}%`;
+      function guess(x, y) {
+        const r = stage.getBoundingClientRect();
+        const ix = (x - r.left) / scale, iy = (y - r.top) / scale;
+        // Small targets get at least an 80 px square so Wright stays clickable.
+        const index = game.targets.findIndex(({ box: [bx, by, bw, bh] }, i) => {
+          const padX = Math.max(0, (80 - bw) / 2), padY = Math.max(0, (80 - bh) / 2);
+          return !found.has(i) && ix >= bx - padX && ix <= bx + bw + padX && iy >= by - padY && iy <= by + bh + padY;
+        });
+        if (index < 0) {
+          const miss = document.createElement('div');
+          miss.className = 'miss';
+          miss.style.left = pct(ix, W);
+          miss.style.top = pct(iy, H);
+          stage.append(miss);
+          miss.onanimationend = () => miss.remove();
+          return;
+        }
+        found.add(index);
+        const [bx, by, bw, bh] = game.targets[index].box;
+        const mark = document.createElement('div');
+        mark.className = 'mark';
+        Object.assign(mark.style, { left: pct(bx, W), top: pct(by, H), width: pct(bw, W), height: pct(bh, H) });
+        stage.append(mark);
+        list.children[index].classList.add('found');
+        update();
+        const seconds = Math.round((Date.now() - started) / 1000);
+        toast(found.size === game.targets.length
+          ? `You found everything in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}!`
+          : `Found ${game.targets[index].name}!`);
+      }
+
+      let toastTimer;
+      function toast(text) {
+        $('toast').textContent = text;
+        $('toast').classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => $('toast').classList.remove('show'), found.size === game.targets.length ? 8000 : 1800);
+      }
+      const update = () => { $('count').textContent = `${found.size} / ${game.targets.length}`; };
+      update();
+    }
+  </script>
+</body>
+</html>
