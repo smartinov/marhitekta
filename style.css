@@ -70,13 +70,17 @@ aside li b::before { content: '○ '; }
 aside li.found b { color: var(--green); }
 aside li.found b::before { content: '✓ '; }
 aside li small { display: block; color: var(--muted); }
-/* Round dark buttons share one look: the floating counter and bulb, and each checklist bulb. */
-.fab, aside li .hint {
+.fab {
   display: grid; place-items: center; padding: 0; border-radius: 50%; background: var(--ink); color: var(--paper);
   cursor: pointer; touch-action: manipulation;
 }
-.fab svg, aside li .hint svg { width: 26px; height: 26px; }
-aside li .hint { float: right; width: 44px; height: 44px; margin-left: 8px; border: 0; }
+.fab svg { width: 26px; height: 26px; }
+/* Checklist bulbs are bare icons; the transparent button keeps a finger-sized tap area. */
+aside li .hint {
+  float: right; display: grid; place-items: center; width: 40px; height: 40px; margin: -4px -8px 0 4px; padding: 0;
+  border: 0; background: none; color: var(--ink); cursor: pointer; touch-action: manipulation;
+}
+aside li .hint svg { width: 22px; height: 22px; }
 .fabs {
   position: absolute; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 3;
   display: grid; gap: 12px; justify-items: center;

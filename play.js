@@ -6,7 +6,7 @@ const view = $('view'), stage = $('stage'), list = $('list');
 const found = new Set();
 const started = Date.now();
 // Drawn rather than an emoji so the bulb looks the same on every platform.
-const BULB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4.2 12.6c.7.6 1.2 1.4 1.2 2.4h6c0-1 .5-1.8 1.2-2.4A7 7 0 0 0 12 2z" fill="#ffd23f"/><path d="M9 18.5h6v1.5H9zM10 21h4v1.5h-4z" fill="#f4ead8"/></svg>';
+const BULB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4.2 12.6c.7.6 1.2 1.4 1.2 2.4h6c0-1 .5-1.8 1.2-2.4A7 7 0 0 0 12 2z" fill="#ffd23f" stroke="#2b2118" stroke-width="1.2"/><path d="M9 18.5h6v1.5H9zM10 21h4v1.5h-4z" fill="currentColor"/></svg>';
 $('bulb').innerHTML = BULB;
 
 stage.style.aspectRatio = `${W} / ${H}`;
@@ -118,9 +118,14 @@ function hint(i) {
   const level = Math.min(3, (hintsUsed.get(i) || 0) + 1);
   hintsUsed.set(i, level);
   const [bx, by, bw, bh] = game.targets[i].box;
-  const radius = Math.max(bw, bh, 80) * [3, 1.5, 0.7][level - 1];
+  // Minimum radii keep the first hints zoomed out for tiny targets such as the architect.
+  const radius = Math.max(Math.max(bw, bh, 80) * [3, 1.5, 0.7][level - 1], [600, 250, 0][level - 1]);
   const angle = Math.random() * 2 * Math.PI, offset = level < 3 ? Math.random() * radius / 2 : 0;
-  const cx = bx + bw / 2 + Math.cos(angle) * offset, cy = by + bh / 2 + Math.sin(angle) * offset;
+  let cx = bx + bw / 2 + Math.cos(angle) * offset, cy = by + bh / 2 + Math.sin(angle) * offset;
+  // Pull the ring inside the picture when the target still fits within it, so edge hints stay fully visible.
+  const clamp = (v, size) => Math.min(Math.max(v, radius), size - radius);
+  const inX = clamp(cx, W), inY = clamp(cy, H);
+  if (Math.hypot(bx + bw / 2 - inX, by + bh / 2 - inY) + Math.hypot(bw, bh) / 2 <= radius) [cx, cy] = [inX, inY];
   ring?.remove();
   ring = document.createElement('div');
   ring.className = 'ring';
