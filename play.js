@@ -15,7 +15,8 @@ stage.innerHTML = game.tiles.map(([file, w, h]) =>
 stage.querySelector('img').alt = `Crowded illustrated landscape hiding buildings by ${game.name}`;
 list.innerHTML = game.targets.map((t, i) =>
   `<li><button class="hint" data-i="${i}" aria-label="Hint for ${t.name}">💡</button>` +
-  `<b>${t.name}</b><small>${t.cue}</small></li>`).join('');
+  `<b>${t.name}</b><small>${t.cue}</small>` +
+  (t.read ? `<a class="read" href="${t.read}" target="_blank" rel="noopener">Read more on Wikipedia</a>` : '') + '</li>').join('');
 
 // Scale is displayed pixels per panorama pixel.
 let scale = 1;

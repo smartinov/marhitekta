@@ -77,6 +77,9 @@ aside li .hint {
 /* The pale bulb emoji needs a dark backdrop to stand out. */
 aside li .hint, .game header #bulb { background: #4a3a2c; }
 aside li.found .hint { display: none; }
+/* Reading links appear only after finding, so photos on the article cannot spoil the search. */
+aside li .read { display: none; font-size: .85rem; padding: 6px 0; }
+aside li.found .read { display: inline-block; }
 .ring {
   position: absolute; border: 4px dashed #ffd23f; border-radius: 50%; pointer-events: none;
   box-shadow: 0 0 0 4px #2b211866, inset 0 0 0 4px #2b211866; animation: pulse 1.2s ease-in-out infinite alternate;
