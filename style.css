@@ -54,7 +54,7 @@ footer { color: var(--muted); font-size: .8rem; margin-top: 48px; }
 .view:focus-visible + .crosshair { display: block; }
 .view { min-width: 0; min-height: 0; display: grid; overflow: auto; touch-action: none; cursor: grab; background: #d9cbb2; user-select: none; -webkit-user-select: none; }
 .view:active { cursor: grabbing; }
-.stage { margin: auto; position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.stage { margin: auto; position: relative; overflow: hidden; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .stage img { display: block; width: 100%; height: auto; -webkit-user-drag: none; }
 .mark { position: absolute; border: 3px solid var(--green); border-radius: 8px; box-shadow: 0 0 0 2px #fff; pointer-events: none; }
 .miss {
@@ -70,6 +70,18 @@ aside li b::before { content: '○ '; }
 aside li.found b { color: var(--green); }
 aside li.found b::before { content: '✓ '; }
 aside li small { display: block; color: var(--muted); }
+aside li .hint {
+  float: right; width: 44px; height: 44px; margin-left: 8px; border: 0; border-radius: 50%;
+  font-size: 1.2rem; cursor: pointer; touch-action: manipulation;
+}
+/* The pale bulb emoji needs a dark backdrop to stand out. */
+aside li .hint, .game header #bulb { background: #4a3a2c; }
+aside li.found .hint { display: none; }
+.ring {
+  position: absolute; border: 4px dashed #ffd23f; border-radius: 50%; pointer-events: none;
+  box-shadow: 0 0 0 4px #2b211866, inset 0 0 0 4px #2b211866; animation: pulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes pulse { to { border-color: var(--rust); } }
 #toast {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--paper);
   padding: 10px 18px; border-radius: 999px; opacity: 0; transition: opacity .3s; pointer-events: none;

@@ -6,7 +6,7 @@ Static hidden-object game at https://smartinov.github.io/marhitekta/. GitHub Pag
 
 - `index.html`: landing page; one card per architect plus the "more coming soon" card.
 - `architects/<name>/index.html`: one static page per architect (clean URL `/architects/<name>/`) with its own title, description, canonical URL and Open Graph/Twitter tags. Loads `game.js` then `../../play.js`.
-- `play.js`: shared game (pan, zoom, pinch, tap to find, keyboard crosshair, checklist bottom sheet on phones).
+- `play.js`: shared game (pan, zoom, pinch, tap to find, keyboard crosshair, checklist bottom sheet on phones, 💡 hints). A hint draws a ring of 3×, 1.5×, then 0.7× the target's size (minimum 80 px); the first two rings are randomly off-centre. The header 💡 hints the first missing target.
 - `style.css`: styles for every page; phones (≤760 px) are the primary layout.
 - `architects/<name>/game.js`: sets `window.GAME` with the panorama size, the 2 × 2 tile list and the targets. Each target box is `[x, y, width, height]` in full-panorama pixels.
 - `architects/<name>/tile-1..4.avif|webp`: non-overlapping quadrants (top left, top right, bottom left, bottom right); AVIF with WebP fallback.
@@ -47,4 +47,4 @@ Serve the folder over HTTP (any static server) and check desktop and phone viewp
 
 - Swap in the approved panorama when MArhitekta's review finishes, and re-verify all boxes.
 - More architects.
-- Not implemented: progress persistence across reloads, hint/reveal button, touch momentum scrolling.
+- Not implemented: progress persistence across reloads, touch momentum scrolling.

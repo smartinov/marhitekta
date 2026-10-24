@@ -13,7 +13,9 @@ stage.innerHTML = game.tiles.map(([file, w, h]) =>
   `<picture><source srcset="${file}.avif" type="image/avif">` +
   `<img src="${file}.webp" width="${w}" height="${h}" alt="" draggable="false"></picture>`).join('');
 stage.querySelector('img').alt = `Crowded illustrated landscape hiding buildings by ${game.name}`;
-list.innerHTML = game.targets.map((t) => `<li><b>${t.name}</b><small>${t.cue}</small></li>`).join('');
+list.innerHTML = game.targets.map((t, i) =>
+  `<li><button class="hint" data-i="${i}" aria-label="Hint for ${t.name}">💡</button>` +
+  `<b>${t.name}</b><small>${t.cue}</small></li>`).join('');
 
 // Scale is displayed pixels per panorama pixel.
 let scale = 1;
@@ -94,6 +96,38 @@ view.onpointerup = (e) => {
 view.onpointercancel = (e) => pointers.delete(e.pointerId);
 
 const pct = (v, total) => `${(v / total) * 100}%`;
+
+// Each hint for a target draws a tighter ring; earlier rings are off-centre so they narrow the search without revealing.
+const hintsUsed = new Map();
+let ring = null;
+list.onclick = (e) => {
+  const i = Number(e.target.closest('.hint')?.dataset.i);
+  if (!Number.isNaN(i) && !found.has(i)) hint(i);
+};
+// The header bulb hints the first target still missing, so phones need not open the list.
+$('bulb').onclick = () => {
+  const i = game.targets.findIndex((_, j) => !found.has(j));
+  if (i >= 0) hint(i);
+};
+function hint(i) {
+  const level = Math.min(3, (hintsUsed.get(i) || 0) + 1);
+  hintsUsed.set(i, level);
+  const [bx, by, bw, bh] = game.targets[i].box;
+  const radius = Math.max(bw, bh, 80) * [3, 1.5, 0.7][level - 1];
+  const angle = Math.random() * 2 * Math.PI, offset = level < 3 ? Math.random() * radius / 2 : 0;
+  const cx = bx + bw / 2 + Math.cos(angle) * offset, cy = by + bh / 2 + Math.sin(angle) * offset;
+  ring?.remove();
+  ring = document.createElement('div');
+  ring.className = 'ring';
+  ring.dataset.i = i;
+  Object.assign(ring.style, { left: pct(cx - radius, W), top: pct(cy - radius, H), width: pct(2 * radius, W), height: pct(2 * radius, H) });
+  stage.append(ring);
+  if (matchMedia('(max-width: 760px)').matches) showList(false);
+  const r = stage.getBoundingClientRect();
+  zoomAt(0.8 * Math.min(view.clientWidth, view.clientHeight) / (2 * radius),
+    r.left + cx * scale, r.top + cy * scale, ...viewCenter());
+  toast(level < 3 ? `${game.targets[i].name} is inside the circle` : `${game.targets[i].name} is right here`);
+}
 function guess(x, y) {
   const r = stage.getBoundingClientRect();
   const ix = (x - r.left) / scale, iy = (y - r.top) / scale;
@@ -118,10 +152,13 @@ function guess(x, y) {
   Object.assign(mark.style, { left: pct(bx, W), top: pct(by, H), width: pct(bw, W), height: pct(bh, H) });
   stage.append(mark);
   list.children[index].classList.add('found');
+  if (ring?.dataset.i === String(index)) ring.remove();
   update();
   const seconds = Math.round((Date.now() - started) / 1000);
+  const hints = [...hintsUsed.values()].reduce((a, b) => a + b, 0);
   toast(found.size === game.targets.length
-    ? `You found everything in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}!`
+    ? `You found everything in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}` +
+      (hints ? ` with ${hints} hint${hints > 1 ? 's' : ''}!` : ' without hints!')
     : `Found ${game.targets[index].name}!`);
 }
 
