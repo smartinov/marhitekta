@@ -115,7 +115,8 @@ aside li.found .read { display: inline-block; }
 @media (max-width: 760px) {
   .game header { flex-wrap: nowrap; gap: 8px; padding-top: max(8px, env(safe-area-inset-top)); }
   .game header h1 { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .game header button { min-width: 44px; height: 44px; }
+  /* Phones zoom by pinch, so the zoom buttons only crowd the title. */
+  .game header button { display: none; }
   aside {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 2; width: auto; height: 55dvh;
     padding-bottom: calc(12px + env(safe-area-inset-bottom)); border-radius: 16px 16px 0 0;
