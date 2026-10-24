@@ -1,0 +1,21 @@
+Illustrations © 2026 Stefan Martinov
+
+The illustrations in this repository are licensed under the Creative Commons
+Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0):
+https://creativecommons.org/licenses/by-nc/4.0/
+Full legal code: https://creativecommons.org/licenses/by-nc/4.0/legalcode.en
+
+This covers, in every folder under architects/:
+- tile-*.avif and tile-*.webp (the panorama)
+- preview.webp
+- share.jpg, except the portrait photograph it contains
+
+You may share and adapt them for non-commercial purposes if you credit
+"Stefan Martinov, Find the Architect (https://smartinov.github.io/marhitekta/)",
+link to the license and indicate changes. Commercial use needs written permission.
+
+Not covered:
+- architects/frank-lloyd-wright/portrait.webp and the portrait inside share.jpg:
+  Frank Lloyd Wright by Al Ravenna, 1954, New York World-Telegram & Sun, public domain
+  (Library of Congress, https://commons.wikimedia.org/wiki/File:Frank_Lloyd_Wright_portrait.jpg).
+- Source code (HTML, CSS, JavaScript): MIT, see LICENSE.

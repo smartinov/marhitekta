@@ -1,6 +1,6 @@
 # Find the Architect
 
-Static hidden-object game at https://smartinov.github.io/marhitekta/. GitHub Pages deploys `main` (repository root) automatically on every push; `.nojekyll` skips Jekyll. There is no build step, framework or dependency. MIT licensed (`LICENSE`); the Wright portrait is public domain.
+Static hidden-object game at https://smartinov.github.io/marhitekta/. GitHub Pages deploys `main` (repository root) automatically on every push; `.nojekyll` skips Jekyll. There is no build step, framework or dependency. Code is MIT (`LICENSE`); illustrations (tiles, previews, share banners) are CC BY-NC 4.0 (`LICENSE-ART`, which covers every `architects/` folder); the Wright portrait is public domain.
 
 ## Layout
 
