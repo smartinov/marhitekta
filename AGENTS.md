@@ -14,6 +14,8 @@ Static hidden-object game at https://smartinov.github.io/marhitekta/. GitHub Pag
 - `architects/<name>/portrait.webp`: landing card portrait. Credit it in the landing footer.
 - `architects/<name>/share.jpg`: 1200 × 630 link-preview banner (portrait + scene crop + title), kept under 300 KB for WhatsApp.
 - `sitemap.xml`, `robots.txt`: list every architect page in the sitemap.
+- `favicon.svg` (master), `favicon.ico` (16/32/48) and `apple-touch-icon.png` (180, opaque): regenerate the last two from the SVG with `magick -density 300`. Pages are served under `/marhitekta/`, so every page needs explicit icon `<link>`s.
+- Targets may carry a `read` URL (a verified Wikipedia article); the link appears once the target is found.
 
 ## Frank Lloyd Wright source
 
