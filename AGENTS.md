@@ -6,7 +6,7 @@ Static hidden-object game at https://smartinov.github.io/marhitekta/. GitHub Pag
 
 - `index.html`: landing page; one card per architect plus the "more coming soon" card.
 - `architects/<name>/index.html`: one static page per architect (clean URL `/architects/<name>/`) with its own title, description, canonical URL and Open Graph/Twitter tags. Loads `game.js` then `../../play.js`.
-- `play.js`: shared game (pan, zoom, pinch, tap to find, keyboard crosshair, checklist, bulb hints). The header holds only back, title and zoom; two round buttons float bottom-right of the picture: the `n/11` counter toggles the checklist (a bottom sheet on phones, the side panel on desktop) and the bulb hints the first missing target. Each checklist item has its own bare bulb icon. A hint draws a ring of 3×, 1.5×, then 0.7× the target's size (minimum 80 px), with minimum radii of 600 and 250 px for the first two so tiny targets start zoomed out; those two rings are randomly off-centre and pulled inside the picture when the target still fits. The bulb is an inline SVG (`BULB`), not an emoji, so it looks the same on every platform.
+- `play.js`: shared game (pan, zoom, pinch, tap to find, keyboard crosshair, checklist, hints). The header holds back, title and zoom buttons; a zoom readout (× relative to the whole picture) sits top-right of the picture and one round `n/11` counter floats bottom-right, toggling the checklist (bottom sheet on phones, side panel on desktop). The checklist starts closed, so no hints show until a player opens it. Each unfound item has a bulb (inline SVG `BULB`, not an emoji); a found item swaps it for a target icon (`TARGET`) that, like its name or tapping the found building again, flies back to it. Hints, focus, + / − and Fit are eased camera moves (`flyTo`, instant under reduced motion); pinch and drag stay direct. A hint flies to a random spot near the target and pings an expanding circle there three times: radii 3×, 1.5×, 0.7× the target size (minimum 80 px) with minimums of 600 and 250 px for the first two, so tiny targets start zoomed out; the circle is pulled inside the picture when the target still fits. After any hint all bulbs dim and recharge over `HINT_COOLDOWN` (5 s).
 - `style.css`: styles for every page; phones (≤760 px) are the primary layout.
 - `architects/<name>/game.js`: sets `window.GAME` with the panorama size, the 2 × 2 tile list and the targets. Each target box is `[x, y, width, height]` in full-panorama pixels.
 - `architects/<name>/tile-1..4.avif|webp`: non-overlapping quadrants (top left, top right, bottom left, bottom right); AVIF with WebP fallback.
@@ -43,7 +43,13 @@ Copy `architects/frank-lloyd-wright/` to `architects/<name>/`, replace `game.js`
 
 ## Verification
 
-Serve the folder over HTTP (any static server) and check desktop and phone viewports in Chromium and WebKit with standalone Playwright: landing renders, all four tiles load, clicking every target box centre at Fit reaches `N / N`, a click on empty ground is a miss, drag pans without guessing, and the console has no errors. Keep such scripts outside the repository.
+Before every push, in this order:
+
+1. Serve the folder locally over HTTP (any static server) and open it in standalone Playwright at desktop (1440 × 900) and phone (390 × 844, touch) sizes in Chromium and WebKit. Look at the screenshots, not only assertions: header, overlays, checklist sheet/panel, toasts, hint pings and the zoom readout.
+2. Assert behaviour: landing renders, all four tiles load, every target box centre at Fit reaches `N/N`, empty ground is a miss, drag pans without guessing, pinch zooms around the fingers, hints fly then ping and respect the cooldown, found items refocus, and the console has no errors.
+3. Have Codex (`/codex:codex`, browser mode) independently verify the styles, overlays and functionality on the local server at desktop and phone sizes, and fix what it finds.
+
+Keep such scripts outside the repository.
 
 ## Open work
 

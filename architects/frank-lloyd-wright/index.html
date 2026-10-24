@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
   <link rel="stylesheet" href="../../style.css">
 </head>
-<body class="game list-open">
+<body class="game">
   <header>
     <a href="../../" aria-label="Back to all architects">←</a>
     <h1 id="title">Find Frank Lloyd Wright</h1>
@@ -34,13 +34,13 @@
     <div class="frame">
       <div class="view" id="view" tabindex="0" aria-label="Picture. Arrow keys pan, Enter guesses at the crosshair."><div class="stage" id="stage"></div></div>
       <div class="crosshair" aria-hidden="true"></div>
+      <div class="zoom" id="zoom" aria-hidden="true"></div>
       <div class="fabs">
-        <button id="bulb" class="fab" aria-label="Hint for the next missing item"></button>
-        <button id="count" class="fab" aria-controls="checklist" aria-expanded="true"></button>
+        <button id="count" class="fab" aria-controls="checklist" aria-expanded="false"></button>
       </div>
     </div>
     <aside id="checklist">
-      <p>Drag to look around, pinch or use + / − to zoom, and tap what you find. The round counter shows or hides this list. Stuck? Tap a bulb, and again for a tighter circle.</p>
+      <p>Drag to look around, pinch or use + / − to zoom, and tap what you find. The round counter shows or hides this list. Stuck? Tap a bulb for a hint; it needs a few seconds to recharge. Tap the target next to anything you found to fly back to it.</p>
       <ol id="list"></ol>
     </aside>
   </main>
