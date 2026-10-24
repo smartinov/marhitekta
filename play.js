@@ -5,6 +5,9 @@ const $ = (id) => document.getElementById(id);
 const view = $('view'), stage = $('stage'), list = $('list');
 const found = new Set();
 const started = Date.now();
+// Drawn rather than an emoji so the bulb looks the same on every platform.
+const BULB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4.2 12.6c.7.6 1.2 1.4 1.2 2.4h6c0-1 .5-1.8 1.2-2.4A7 7 0 0 0 12 2z" fill="#ffd23f"/><path d="M9 18.5h6v1.5H9zM10 21h4v1.5h-4z" fill="#f4ead8"/></svg>';
+$('bulb').innerHTML = BULB;
 
 stage.style.aspectRatio = `${W} / ${H}`;
 // A small preview shows instantly while the full-resolution tiles stream in on top.
@@ -14,7 +17,7 @@ stage.innerHTML = game.tiles.map(([file, w, h]) =>
   `<img src="${file}.webp" width="${w}" height="${h}" alt="" draggable="false"></picture>`).join('');
 stage.querySelector('img').alt = `Crowded illustrated landscape hiding buildings by ${game.name}`;
 list.innerHTML = game.targets.map((t, i) =>
-  `<li><button class="hint" data-i="${i}" aria-label="Hint for ${t.name}">💡</button>` +
+  `<li><button class="hint" data-i="${i}" aria-label="Hint for ${t.name}">${BULB}</button>` +
   `<b>${t.name}</b><small>${t.cue}</small>` +
   (t.read ? `<a class="read" href="${t.read}" target="_blank" rel="noopener">Read more on Wikipedia</a>` : '') + '</li>').join('');
 
@@ -40,7 +43,8 @@ const fit = () => zoomCenter(0);
 fit();
 // Open filling the viewport so phones do not start on a letterboxed thumbnail.
 zoomCenter(Math.max(view.clientWidth / W, view.clientHeight / H) / scale);
-addEventListener('resize', () => scale < minScale() && fit());
+// Watches the view itself, which also shrinks when the desktop checklist opens.
+new ResizeObserver(() => scale < minScale() && fit()).observe(view);
 $('in').onclick = () => zoomCenter(1.5);
 $('out').onclick = () => zoomCenter(1 / 1.5);
 $('fit').onclick = fit;
@@ -170,5 +174,8 @@ function toast(text) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $('toast').classList.remove('show'), found.size === game.targets.length ? 8000 : 1800);
 }
-const update = () => { $('count').textContent = `${found.size} / ${game.targets.length}`; };
+const update = () => {
+  $('count').textContent = `${found.size}/${game.targets.length}`;
+  $('count').setAttribute('aria-label', `Checklist: ${found.size} of ${game.targets.length} found`);
+};
 update();

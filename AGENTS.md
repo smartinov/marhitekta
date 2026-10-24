@@ -6,7 +6,7 @@ Static hidden-object game at https://smartinov.github.io/marhitekta/. GitHub Pag
 
 - `index.html`: landing page; one card per architect plus the "more coming soon" card.
 - `architects/<name>/index.html`: one static page per architect (clean URL `/architects/<name>/`) with its own title, description, canonical URL and Open Graph/Twitter tags. Loads `game.js` then `../../play.js`.
-- `play.js`: shared game (pan, zoom, pinch, tap to find, keyboard crosshair, checklist bottom sheet on phones, 💡 hints). A hint draws a ring of 3×, 1.5×, then 0.7× the target's size (minimum 80 px); the first two rings are randomly off-centre. The header 💡 hints the first missing target.
+- `play.js`: shared game (pan, zoom, pinch, tap to find, keyboard crosshair, checklist, bulb hints). The header holds only back, title and zoom; two round buttons float bottom-right of the picture: the `n/11` counter toggles the checklist (a bottom sheet on phones, the side panel on desktop) and the bulb hints the first missing target. Each checklist item has its own bulb. A hint draws a ring of 3×, 1.5×, then 0.7× the target's size (minimum 80 px); the first two rings are randomly off-centre. The bulb is an inline SVG (`BULB`), not an emoji, so it looks the same on every platform.
 - `style.css`: styles for every page; phones (≤760 px) are the primary layout.
 - `architects/<name>/game.js`: sets `window.GAME` with the panorama size, the 2 × 2 tile list and the targets. Each target box is `[x, y, width, height]` in full-panorama pixels.
 - `architects/<name>/tile-1..4.avif|webp`: non-overlapping quadrants (top left, top right, bottom left, bottom right); AVIF with WebP fallback.
