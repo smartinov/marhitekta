@@ -86,7 +86,10 @@ $('fit').onclick = fit;
 const showList = (open) => {
   document.body.classList.toggle('list-open', open);
   $('count').setAttribute('aria-expanded', open);
+  // The closed phone sheet is only slid off-screen, so keep keyboard and screen readers out of it.
+  $('checklist').inert = !open;
 };
+showList(false);
 $('count').onclick = () => showList(!document.body.classList.contains('list-open'));
 addEventListener('keydown', (e) => {
   if (e.key === '+' || e.key === '=') zoomBy(1.5);
