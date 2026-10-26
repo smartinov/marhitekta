@@ -19,9 +19,9 @@ Static hidden-object game at https://smartinov.github.io/marhitekta/. GitHub Pag
 
 ## Frank Lloyd Wright source
 
-The artwork comes from the private working project `~/Documents/MArhitekta` (the edition is still a work-in-progress candidate there, published here at the owner's request).
+The artwork comes from the private working project `~/Documents/MArhitekta`.
 
-- Image: `panorama/work/assembly/populated/candidate.png`, 6280 × 3533. The published tiles were cut from the version with SHA-256 prefix `dead5e1c83ab`; compare before re-cutting. Replace with an approved `panorama/complete/` image once one exists.
+- Image: the approved `panorama/complete/finding-wright.webp` (lossless), 6280 × 3533; decode it to PNG and use that as `SRC`. The published tiles were cut from the version whose source PNG has SHA-256 prefix `705679879c7d` (see `panorama/work/final-delivery/promotion-manifest.json`); compare before re-cutting.
 - Building boxes: `panorama/work/production-layout/layout.json` → `targets[].projectedPixelBounds`. Wright: `panorama/work/assembly/populated/placements.json` → `actor` (`topLeft`, `width`, `height`).
 - Boxes are only valid while the panorama stays 6280 × 3533 with the same layout; re-check them against crops of any new image.
 - Portrait: `references/architect/wright-portrait.jpg`, Al Ravenna 1954, public domain (Library of Congress).
@@ -53,6 +53,6 @@ Keep such scripts outside the repository.
 
 ## Open work
 
-- Swap in the approved panorama when MArhitekta's review finishes, and re-verify all boxes.
+- Regenerate `share.jpg`: its scene crop predates the approved panorama.
 - More architects.
 - Not implemented: progress persistence across reloads, touch momentum scrolling.
