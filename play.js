@@ -230,6 +230,8 @@ function pin() {
     x = clamp(m.left + m.width / 2 - w / 2, f.left + gap, f.right - w - gap);
     y = m.bottom + gap + h <= bottom ? m.bottom + gap : m.top - gap - h >= f.top ? m.top - gap - h : bottom - h;
   }
+  // A target panned off-screen would drag the card out with it, so the card always stays inside the view.
+  x = clamp(x, f.left + gap, f.right - w - gap);
   y = Math.max(f.top + gap, y);
   card.style.left = `${x - f.left}px`;
   card.style.top = `${y - f.top}px`;
