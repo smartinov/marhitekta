@@ -92,12 +92,41 @@ aside li.found .goto { display: grid; }
   display: grid; gap: 12px; justify-items: center;
 }
 .fab { width: 56px; height: 56px; border: 2px solid var(--paper); box-shadow: 0 4px 14px #0006; font: 700 1rem system-ui, sans-serif; }
-#count.fab { width: 68px; height: 68px; }
+/* A word beside the count, so the checklist is clearly a button and not only a score. */
+#count.fab { width: auto; height: 56px; padding: 0 20px; border-radius: 999px; gap: 6px; grid-auto-flow: column; font-weight: 600; }
 .list-open #count.fab { background: var(--rust); }
 aside li.found .hint { display: none; }
-/* Reading links appear only after finding, so photos on the article cannot spoil the search. */
-aside li .read { display: none; font-size: .85rem; padding: 6px 0; }
-aside li.found .read { display: inline-block; }
+aside li .figure { display: block; height: 96px; margin-top: 6px; }
+/* Reading links live on the card, which appears only after finding, so article photos cannot spoil the search. */
+#card {
+  position: absolute; z-index: 3; width: min(300px, calc(100% - 24px)); max-height: calc(100% - 24px); overflow: auto;
+  padding: 12px 16px; border-radius: 12px; background: #fffaf1; box-shadow: 0 4px 18px #0005; font-size: .9rem;
+}
+#card[hidden] { display: none; }
+#card h2 { margin: 0 32px 6px 0; font-size: 1.15rem; color: var(--green); }
+#card p { margin: 0 0 8px; }
+#card p:last-child { margin: 0; color: var(--muted); font-size: .85rem; }
+#card .close {
+  position: absolute; top: 2px; right: 2px; width: 44px; height: 44px; border: 0; background: none;
+  font-size: 1.4rem; color: var(--ink); cursor: pointer; touch-action: manipulation;
+}
+#intro {
+  width: min(520px, calc(100% - 24px)); max-height: calc(100dvh - 24px); padding: 20px; border: 0; border-radius: 16px;
+  background: #fffaf1; color: var(--ink); box-shadow: 0 8px 30px #0006;
+}
+#intro::backdrop { background: #2b2118aa; }
+#intro h2 { margin: 0 0 8px; }
+#intro p, #intro li { line-height: 1.4; }
+#intro ul { padding-left: 20px; margin: 12px 0 16px; }
+#intro .who { display: flex; gap: 16px; align-items: center; padding: 12px; border-radius: 12px; background: #f4ead8; }
+#intro .who > img { height: 220px; width: auto; }
+#intro .who p { margin: 8px 0 0; font-size: .9rem; color: var(--muted); }
+/* Shown pixel for pixel, so players see exactly what they are looking for. */
+#intro .actual { width: 96px; height: 160px; image-rendering: pixelated; border-radius: 6px; }
+#intro form button {
+  width: 100%; min-height: 48px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper);
+  font: 600 1rem system-ui, sans-serif; cursor: pointer;
+}
 .ping { position: absolute; border: 5px solid #ffd23f; border-radius: 50%; box-shadow: 0 0 0 3px #2b211866; pointer-events: none; }
 .zoom {
   position: absolute; top: 10px; right: 10px; z-index: 3; padding: 4px 10px; border-radius: 999px;
@@ -116,7 +145,9 @@ aside li.found .read { display: inline-block; }
   .game header { flex-wrap: nowrap; gap: 8px; padding-top: max(8px, env(safe-area-inset-top)); }
   .game header h1 { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   /* Phones zoom by pinch, so the zoom buttons only crowd the title. */
-  .game header button { display: none; }
+  .game header button:not(#help) { display: none; }
+  #intro .who > img { height: 160px; }
+  #intro .actual { width: 72px; height: 120px; }
   aside {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 2; width: auto; height: 55dvh;
     padding-bottom: calc(12px + env(safe-area-inset-bottom)); border-radius: 16px 16px 0 0;

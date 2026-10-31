@@ -26,6 +26,7 @@
   <header>
     <a href="../../" aria-label="Back to all architects">←</a>
     <h1 id="title">Find Frank Lloyd Wright</h1>
+    <button id="help" aria-label="How to play">?</button>
     <button id="out" aria-label="Zoom out">−</button>
     <button id="fit" aria-label="Show whole picture">Fit</button>
     <button id="in" aria-label="Zoom in">+</button>
@@ -35,15 +36,39 @@
       <div class="view" id="view" tabindex="0" aria-label="Picture. Arrow keys pan, Enter guesses at the crosshair."><div class="stage" id="stage"></div></div>
       <div class="crosshair" aria-hidden="true"></div>
       <div class="zoom" id="zoom" aria-hidden="true"></div>
+      <section id="card" aria-labelledby="card-name" hidden>
+        <button class="close" aria-label="Close">×</button>
+        <h2 id="card-name"></h2>
+        <p id="card-about"></p>
+        <p id="card-look"></p>
+        <p id="card-links"></p>
+      </section>
       <div class="fabs">
         <button id="count" class="fab" aria-controls="checklist" aria-expanded="false"></button>
       </div>
     </div>
     <aside id="checklist">
-      <p>Drag to look around, pinch to zoom (or use + / − on a computer), and tap what you find. The round counter shows or hides this list. Stuck? Tap a bulb for a hint; it needs a few seconds to recharge. Tap the target next to anything you found to fly back to it.</p>
+      <p>Drag to look around, pinch to zoom (or use + / − on a computer), and tap what you find. The Checklist button shows or hides this list. Stuck? Tap a bulb for a hint; it needs a few seconds to recharge. Tap the target next to anything you found to fly back to it.</p>
       <ol id="list"></ol>
     </aside>
   </main>
+  <dialog id="intro" aria-labelledby="intro-title">
+    <h2 id="intro-title">Find Frank Lloyd Wright</h2>
+    <p>Ten of Wright's buildings and Wright himself are hidden in this town. Find all eleven.</p>
+    <div class="who">
+      <img src="figure.webp" width="221" height="480" alt="Drawing of Wright as he appears in the picture: brown hat, long rust scarf, brown coat and a cane">
+      <div>
+        <img class="actual" src="figure-actual.png" width="24" height="40" alt="The same figure as it really looks in the picture, enlarged">
+        <p>The small one is how he really looks in the picture, enlarged. Look for the brown hat, the long rust scarf and the cane. He is no bigger than anyone else, so zoom in.</p>
+      </div>
+    </div>
+    <ul>
+      <li>Drag to look around. Pinch, or use + / −, to zoom.</li>
+      <li>Tap a building or a person to guess.</li>
+      <li>The checklist has a clue for each one. Stuck? Tap a bulb for a hint.</li>
+    </ul>
+    <form method="dialog"><button value="list" autofocus>Open the checklist</button></form>
+  </dialog>
   <div id="toast" role="status"></div>
   <script src="game.js"></script>
   <script src="../../play.js"></script>

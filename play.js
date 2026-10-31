@@ -2,10 +2,10 @@
 const game = window.GAME;
 const [W, H] = game.size;
 const $ = (id) => document.getElementById(id);
-const view = $('view'), stage = $('stage'), list = $('list');
+const view = $('view'), stage = $('stage'), list = $('list'), card = $('card');
 const found = new Set();
 const marks = [];
-const started = Date.now();
+let started = 0;
 const phone = () => matchMedia('(max-width: 760px)').matches;
 const motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1;
 // Drawn rather than an emoji so the bulb looks the same on every platform.
@@ -23,7 +23,7 @@ list.innerHTML = game.targets.map((t) =>
   `<li><button class="hint" aria-label="Hint for ${t.name}">${BULB}</button>` +
   `<button class="goto" aria-label="Show ${t.name}">${TARGET}</button>` +
   `<button class="name">${t.name}</button><small>${t.cue}</small>` +
-  (t.read ? `<a class="read" href="${t.read}" target="_blank" rel="noopener">Read more on Wikipedia</a>` : '') + '</li>').join('');
+  (t.figure ? `<img class="figure" src="${t.figure}" alt="">` : '') + '</li>').join('');
 
 // Scale is displayed pixels per panorama pixel.
 let scale = 1;
@@ -39,6 +39,7 @@ function zoomAt(next, fromX, fromY, toX = fromX, toY = fromY) {
   view.scrollLeft += after.left + px * scale - toX;
   view.scrollTop += after.top + py * scale - toY;
   showZoom();
+  pin();
 }
 const viewCenter = () => {
   const r = view.getBoundingClientRect();
@@ -91,7 +92,17 @@ const showList = (open) => {
 };
 showList(false);
 $('count').onclick = () => showList(!document.body.classList.contains('list-open'));
+// Every visit opens on the objective, the architect's figure and the controls; the checklist follows.
+$('intro').onclose = () => {
+  started ||= Date.now();
+  if ($('intro').returnValue === 'list') showList(true);
+};
+// Escape keeps the previous returnValue, so clear it before each opening.
+const intro = () => { $('intro').returnValue = ''; $('intro').showModal(); };
+$('help').onclick = intro;
+intro();
 addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') card.hidden = true;
   if (e.key === '+' || e.key === '=') zoomBy(1.5);
   if (e.key === '-') zoomBy(1 / 1.5);
   // Keyboard players pan with the arrow keys and guess at the centre crosshair.
@@ -106,7 +117,7 @@ view.addEventListener('wheel', (e) => {
 
 // One pointer pans, two pointers pinch; a primary press that barely moves is a guess.
 const pointers = new Map();
-let travel = 0;
+let start = null, moved = false, speed = [0, 0], lastMove = 0;
 view.onpointerdown = (e) => {
   if (e.button !== 0) return;
   // On phones the sheet covers the picture, so the first touch only dismisses it.
@@ -114,8 +125,22 @@ view.onpointerdown = (e) => {
   stop();
   view.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-  travel = pointers.size > 1 ? Infinity : 0;
+  if (pointers.size > 1) moved = true;
+  else [start, moved, speed] = [[e.clientX, e.clientY], false, [0, 0]];
 };
+// A flicked finger lets the picture glide on and slow down, as native scrolling does.
+function glide([vx, vy]) {
+  let last = performance.now();
+  const step = (now) => {
+    const dt = now - last, k = Math.exp(-dt / 325);
+    last = now;
+    view.scrollLeft -= vx * dt;
+    view.scrollTop -= vy * dt;
+    [vx, vy] = [vx * k, vy * k];
+    if (Math.hypot(vx, vy) > 0.02) flight = requestAnimationFrame(step);
+  };
+  flight = requestAnimationFrame(step);
+}
 view.onpointermove = (e) => {
   const p = pointers.get(e.pointerId);
   if (!p) return;
@@ -127,16 +152,24 @@ view.onpointermove = (e) => {
     zoomAt(scale * Math.hypot(a.x - b.x, a.y - b.y) / fromD, fromX, fromY, (a.x + b.x) / 2, (a.y + b.y) / 2);
     return;
   }
-  view.scrollLeft -= e.clientX - p.x;
-  view.scrollTop -= e.clientY - p.y;
-  travel += Math.abs(e.clientX - p.x) + Math.abs(e.clientY - p.y);
+  const dx = e.clientX - p.x, dy = e.clientY - p.y, dt = Math.max(1, e.timeStamp - lastMove);
+  view.scrollLeft -= dx;
+  view.scrollTop -= dy;
+  speed = [(speed[0] + dx / dt) / 2, (speed[1] + dy / dt) / 2];
+  lastMove = e.timeStamp;
+  // Fingers wobble a few pixels during a tap, so only a real drag cancels the guess.
+  if (Math.hypot(e.clientX - start[0], e.clientY - start[1]) > 10) moved = true;
   p.x = e.clientX;
   p.y = e.clientY;
 };
 view.onpointerup = (e) => {
-  if (pointers.size === 1 && pointers.has(e.pointerId) && travel < 8) guess(e.clientX, e.clientY);
+  if (pointers.size === 1 && pointers.has(e.pointerId)) {
+    if (!moved) guess(e.clientX, e.clientY);
+    else if (e.pointerType === 'touch' && motion && e.timeStamp - lastMove < 100) glide(speed);
+  }
   pointers.delete(e.pointerId);
 };
+view.addEventListener('scroll', () => pin());
 view.onpointercancel = (e) => pointers.delete(e.pointerId);
 
 const pct = (v, total) => `${(v / total) * 100}%`;
@@ -145,7 +178,7 @@ const place = (el, x, y, w, h) => Object.assign(el.style, { left: pct(x, W), top
 // Bulbs in the checklist give hints; a found item's target icon or name flies back to it.
 list.onclick = (e) => {
   const li = e.target.closest('li');
-  if (!li || e.target.closest('a')) return;
+  if (!li) return;
   const i = [...list.children].indexOf(li);
   if (e.target.closest('.hint') && !found.has(i)) hint(i);
   else if (e.target.closest('.goto, .name') && found.has(i)) focus(i);
@@ -154,8 +187,45 @@ list.onclick = (e) => {
 function focus(i) {
   const [bx, by, bw, bh] = game.targets[i].box;
   if (phone()) showList(false);
-  flyTo(0.6 * Math.min(view.clientWidth / bw, view.clientHeight / bh), bx + bw / 2, by + bh / 2,
-    () => marks[i].animate([{ opacity: 1 }, { opacity: 0.15 }, { opacity: 1 }], { duration: 500, iterations: 3 }));
+  card.hidden = true;
+  // Leave the card's size plus gaps free beside the target: to the right on wide screens, below it on phones.
+  const [roomX, roomY] = phone() ? [0, 300] : [324, 0];
+  const s = Math.min(3, Math.max(minScale(), 0.6 * Math.min((view.clientWidth - roomX) / bw, (view.clientHeight - roomY) / bh)));
+  flyTo(s, bx + bw / 2 + roomX / 2 / s, by + bh / 2 + roomY / 2 / s, () => {
+    marks[i].animate([{ opacity: 1 }, { opacity: 0.15 }, { opacity: 1 }], { duration: 500, iterations: 3 });
+    showCard(i);
+  });
+}
+
+// The card about a found target sits beside it and follows it while the picture pans and zooms.
+let carded = -1;
+function showCard(i) {
+  const t = game.targets[i];
+  carded = i;
+  $('card-name').textContent = t.name;
+  $('card-about').textContent = t.about;
+  $('card-look').innerHTML = `<b>Look at it:</b> ${t.look}`;
+  $('card-links').innerHTML = 'Read more: ' + t.links.map(([label, url]) =>
+    `<a href="${url}" target="_blank" rel="noopener">${label}</a>`).join(' · ');
+  card.hidden = false;
+  pin();
+}
+card.querySelector('.close').onclick = () => { card.hidden = true; };
+function pin() {
+  if (card.hidden) return;
+  const f = view.getBoundingClientRect(), m = marks[carded].getBoundingClientRect();
+  // The bottom edge stops above the floating Checklist button.
+  const w = card.offsetWidth, h = card.offsetHeight, gap = 12, bottom = f.bottom - 84;
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(v, hi));
+  // Prefer beside the target, then below or above it; at worst the card overlaps it, kept inside the view.
+  let x = m.right + gap + w <= f.right ? m.right + gap : m.left - gap - w >= f.left ? m.left - gap - w : null, y;
+  if (x !== null) y = clamp(m.top + m.height / 2 - h / 2, f.top + gap, bottom - h);
+  else {
+    x = clamp(m.left + m.width / 2 - w / 2, f.left + gap, f.right - w - gap);
+    y = m.bottom + gap + h <= bottom ? m.bottom + gap : m.top - gap - h >= f.top ? m.top - gap - h : bottom - h;
+  }
+  card.style.left = `${x - f.left}px`;
+  card.style.top = `${y - f.top}px`;
 }
 
 // Hints recharge for a few seconds so they cannot be spammed; the bulbs visibly light back up.
@@ -214,6 +284,7 @@ function guess(x, y) {
     miss.style.top = pct(iy, H);
     stage.append(miss);
     miss.onanimationend = () => miss.remove();
+    card.hidden = true;
     return;
   }
   found.add(index);
@@ -223,6 +294,7 @@ function guess(x, y) {
   stage.append(marks[index]);
   list.children[index].classList.add('found');
   update();
+  showCard(index);
   const seconds = Math.round((Date.now() - started) / 1000);
   const hints = [...hintsUsed.values()].reduce((a, b) => a + b, 0);
   toast(found.size === game.targets.length
@@ -239,8 +311,7 @@ function toast(text, ms = 1800) {
   toastTimer = setTimeout(() => $('toast').classList.remove('show'), ms);
 }
 const update = () => {
-  $('count').textContent = `${found.size}/${game.targets.length}`;
+  $('count').innerHTML = `Checklist <b>${found.size}/${game.targets.length}</b>`;
   $('count').setAttribute('aria-label', `Checklist: ${found.size} of ${game.targets.length} found`);
 };
 update();
-toast(`Tap ${$('count').textContent} to see what to find`, 4000);
