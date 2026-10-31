@@ -1,5 +1,5 @@
 // Boxes are [x, y, width, height] in pixels of the full 6280 x 3533 panorama.
-// Cues name only what the panorama shows; card facts and their sources are recorded with the production research.
+// Cues name only what the panorama shows at native pixels, so players can rely on every word.
 const FLW = 'https://franklloydwright.org/site/';
 window.GAME = {
   name: 'Frank Lloyd Wright',
@@ -48,7 +48,7 @@ window.GAME = {
     },
     {
       name: 'Hollyhock House', box: [3509, 1945, 799, 506],
-      cue: 'Buff walls turn inward around a garden courtyard, with a band of stylized ornament along the roof edges and a round pool.',
+      cue: 'Buff walls turn inward around a garden courtyard, with a band of stylized ornament along the roof edges and a curved pool.',
       about: 'Built from 1918 to 1921 in Los Angeles for Aline Barnsdall, as the centrepiece of an arts complex that was only partly built. It is on the UNESCO World Heritage List.',
       look: 'The rooms wrap around the courtyard; follow the ornament band along the roof edges.',
       links: [['Hollyhock House', 'https://hollyhockhouse.org/'], ['Wikipedia', 'https://en.wikipedia.org/wiki/Hollyhock_House']],
