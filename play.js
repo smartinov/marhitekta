@@ -79,16 +79,18 @@ const fit = () => flyTo(0, W / 2, H / 2);
 // Open filling the viewport so phones do not start on a letterboxed thumbnail.
 centerOn(Math.max(view.clientWidth / W, view.clientHeight / H), W / 2, H / 2);
 // Watches the view itself, which also changes size when the desktop checklist opens.
-new ResizeObserver(() => (scale < minScale() ? centerOn(0, ...centerPoint()) : showZoom())).observe(view);
+new ResizeObserver(() => (scale < minScale() ? centerOn(0, ...centerPoint()) : (showZoom(), pin()))).observe(view);
 $('in').onclick = () => zoomBy(1.5);
 $('out').onclick = () => zoomBy(1 / 1.5);
 $('fit').onclick = fit;
-// The counter toggles the checklist, which is a bottom sheet on phones.
+// The Checklist button toggles the checklist, which is a bottom sheet on phones.
 const showList = (open) => {
   document.body.classList.toggle('list-open', open);
   $('count').setAttribute('aria-expanded', open);
   // The closed phone sheet is only slid off-screen, so keep keyboard and screen readers out of it.
   $('checklist').inert = !open;
+  // The phone sheet would sit under a card left over from the last find.
+  if (open && phone()) card.hidden = true;
 };
 showList(false);
 $('count').onclick = () => showList(!document.body.classList.contains('list-open'));
@@ -102,6 +104,7 @@ const intro = () => { $('intro').returnValue = ''; $('intro').showModal(); };
 $('help').onclick = intro;
 intro();
 addEventListener('keydown', (e) => {
+  if ($('intro').open) return;
   if (e.key === 'Escape') card.hidden = true;
   if (e.key === '+' || e.key === '=') zoomBy(1.5);
   if (e.key === '-') zoomBy(1 / 1.5);
@@ -187,14 +190,14 @@ list.onclick = (e) => {
 function focus(i) {
   const [bx, by, bw, bh] = game.targets[i].box;
   if (phone()) showList(false);
-  card.hidden = true;
   // Leave the card's size plus gaps free beside the target: to the right on wide screens, below it on phones.
   const [roomX, roomY] = phone() ? [0, 300] : [324, 0];
   const s = Math.min(3, Math.max(minScale(), 0.6 * Math.min((view.clientWidth - roomX) / bw, (view.clientHeight - roomY) / bh)));
   flyTo(s, bx + bw / 2 + roomX / 2 / s, by + bh / 2 + roomY / 2 / s, () => {
     marks[i].animate([{ opacity: 1 }, { opacity: 0.15 }, { opacity: 1 }], { duration: 500, iterations: 3 });
-    showCard(i);
   });
+  // Shown at once and pinned during the flight, so touching the picture mid-flight cannot lose it.
+  showCard(i);
 }
 
 // The card about a found target sits beside it and follows it while the picture pans and zooms.
@@ -210,7 +213,10 @@ function showCard(i) {
   card.hidden = false;
   pin();
 }
-card.querySelector('.close').onclick = () => { card.hidden = true; };
+card.querySelector('.close').onclick = () => {
+  card.hidden = true;
+  view.focus({ preventScroll: true });
+};
 function pin() {
   if (card.hidden) return;
   const f = view.getBoundingClientRect(), m = marks[carded].getBoundingClientRect();
@@ -224,6 +230,7 @@ function pin() {
     x = clamp(m.left + m.width / 2 - w / 2, f.left + gap, f.right - w - gap);
     y = m.bottom + gap + h <= bottom ? m.bottom + gap : m.top - gap - h >= f.top ? m.top - gap - h : bottom - h;
   }
+  y = Math.max(f.top + gap, y);
   card.style.left = `${x - f.left}px`;
   card.style.top = `${y - f.top}px`;
 }

@@ -140,7 +140,7 @@ aside li .figure { display: block; height: 96px; margin-top: 6px; }
 
 .game header button { touch-action: manipulation; }
 
-/* Phones: the picture takes the screen and the checklist is a bottom sheet toggled by the counter. */
+/* Phones: the picture takes the screen and the checklist is a bottom sheet toggled by the Checklist button. */
 @media (max-width: 760px) {
   .game header { flex-wrap: nowrap; gap: 8px; padding-top: max(8px, env(safe-area-inset-top)); }
   .game header h1 { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -159,7 +159,7 @@ aside li .figure { display: block; height: 96px; margin-top: 6px; }
   .list-open .fabs { bottom: calc(55dvh + 12px); }
 }
 
-/* Desktop: the counter hides the side checklist to give the picture more room. */
+/* Desktop: the Checklist button hides the side checklist to give the picture more room. */
 @media (min-width: 761px) {
   .game:not(.list-open) aside { display: none; }
 }
