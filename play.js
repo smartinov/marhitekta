@@ -27,8 +27,9 @@ list.innerHTML = game.targets.map((t) =>
 
 // Scale is displayed pixels per panorama pixel.
 let scale = 1;
-// Phones never zoom out past filling the view; desktop can still show the whole picture.
-const minScale = () => (phone() ? Math.max : Math.min)(view.clientWidth / W, view.clientHeight / H);
+// Touch screens in any orientation never zoom out past filling the view; mouse screens can still show the whole picture.
+const touch = matchMedia('(pointer: coarse)');
+const minScale = () => (touch.matches ? Math.max : Math.min)(view.clientWidth / W, view.clientHeight / H);
 const showZoom = () => { $('zoom').textContent = `${(scale / minScale()).toFixed(1)}×`; };
 // Keeps the panorama point under (fromX, fromY) on screen at (toX, toY) after zooming.
 function zoomAt(next, fromX, fromY, toX = fromX, toY = fromY) {
