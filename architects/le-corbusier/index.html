@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find Le Corbusier: Villa Savoye, Ronchamp and more | Find the Architect</title>
+  <meta name="description" content="A free hidden-object game: find Villa Savoye, Ronchamp, the Unité d'Habitation and seven more Le Corbusier buildings, and Le Corbusier himself, in a crowded illustrated city.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <link rel="canonical" href="https://smartinov.github.io/marhitekta/architects/le-corbusier/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Find the Architect">
+  <meta property="og:title" content="Can you find Le Corbusier?">
+  <meta property="og:description" content="Spot Villa Savoye, Ronchamp and eight more Le Corbusier buildings, then find the architect himself in the crowd.">
+  <meta property="og:url" content="https://smartinov.github.io/marhitekta/architects/le-corbusier/">
+  <meta property="og:image" content="https://smartinov.github.io/marhitekta/architects/le-corbusier/share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Portrait of Le Corbusier beside the illustrated city with his buildings">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../../favicon.ico" sizes="32x32">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body class="game">
+  <header>
+    <a href="../../" aria-label="Back to all architects">←</a>
+    <h1 id="title">Find Le Corbusier</h1>
+    <button id="help" aria-label="How to play">?</button>
+    <button id="out" aria-label="Zoom out">−</button>
+    <button id="fit" aria-label="Show whole picture">Fit</button>
+    <button id="in" aria-label="Zoom in">+</button>
+  </header>
+  <main>
+    <div class="frame">
+      <div class="view" id="view" tabindex="0" aria-label="Picture. Arrow keys pan, Enter guesses at the crosshair."><div class="stage" id="stage"></div></div>
+      <div class="crosshair" aria-hidden="true"></div>
+      <div class="zoom" id="zoom" aria-hidden="true"></div>
+      <section id="card" aria-labelledby="card-name" hidden>
+        <button class="close" aria-label="Close">×</button>
+        <h2 id="card-name"></h2>
+        <p id="card-about"></p>
+        <p id="card-look"></p>
+        <p id="card-links"></p>
+      </section>
+      <div class="fabs">
+        <button id="count" class="fab" aria-controls="checklist" aria-expanded="false"></button>
+      </div>
+    </div>
+    <aside id="checklist">
+      <p>Drag to look around, pinch to zoom (or use + / − on a computer), and tap what you find. The Checklist button shows or hides this list. Stuck? Tap a bulb for a hint; it needs a few seconds to recharge. Tap the target next to anything you found to fly back to it.</p>
+      <ol id="list"></ol>
+    </aside>
+  </main>
+  <dialog id="intro" aria-labelledby="intro-title">
+    <h2 id="intro-title">Find Le Corbusier</h2>
+    <p>Ten of Le Corbusier's buildings and Le Corbusier himself are hidden in this city. Find all eleven.</p>
+    <div class="who">
+      <img src="figure.webp" width="221" height="480" alt="Drawing of Le Corbusier as he appears in the picture: dark suit, white shirt, bow tie and round black glasses">
+      <div>
+        <img class="actual" src="figure-actual.png" width="24" height="40" alt="The same figure as it really looks in the picture, enlarged">
+        <p>The small one is how he really looks in the picture, enlarged. Look for a lone dark suit with a white shirt front; the glasses and bow tie are too small to see. He is no bigger than anyone else, so zoom in.</p>
+      </div>
+    </div>
+    <ul>
+      <li>Drag to look around. Pinch to zoom (or use + / − on a computer).</li>
+      <li>Tap a building or a person to guess.</li>
+      <li>The checklist has a clue for each one. Stuck? Tap a bulb for a hint.</li>
+    </ul>
+    <form method="dialog"><button value="list" autofocus>Open the checklist</button></form>
+  </dialog>
+  <div id="toast" role="status"></div>
+  <script src="game.js"></script>
+  <script src="../../play.js"></script>
+</body>
+</html>
