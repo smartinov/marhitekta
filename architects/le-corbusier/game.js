@@ -14,10 +14,10 @@ window.GAME = {
   ],
   targets: [
     {
-      name: 'Le Corbusier', figure: 'figure.webp', box: [1531, 2148, 5, 17],
+      name: 'Le Corbusier', figure: 'figure.webp', box: [1531, 2148, 6, 17],
       cue: 'The architect himself: a man in a dark suit and white shirt, one of the pedestrians on the pavement of a street, just west of the big flat-roofed grey museum block. He is the same size as everyone else.',
       about: 'Born Charles-Édouard Jeanneret in Switzerland in 1887, he took the name Le Corbusier in the 1920s. He worked in France, India, Japan and Argentina, and designed the master plan of Chandigarh.',
-      look: 'At this size you only see a dark suit and a white shirt front; his round black glasses and bow tie are far too small to read.',
+      look: 'At this size you only see a dark suit and a pale head; his round black glasses and bow tie are far too small to read.',
       links: [['Fondation Le Corbusier', FLC], ['Wikipedia', `${WP}Le_Corbusier`]],
     },
     {
